@@ -1,0 +1,5 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nuke-build/nuke/master/source/Nuke.Utilities.Text.Json/schema.json",
+  "Solution": "dysh.sln",
+  "BuildProjectFile": "build/Build.csproj"
+}
