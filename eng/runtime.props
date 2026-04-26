@@ -1,0 +1,6 @@
+<Project>
+    <PropertyGroup>
+        <SdkDefaultVersion>net8.0</SdkDefaultVersion>
+        <SdkCurrentSupportedVersions>netstandard2.0;$(SdkDefaultVersion)</SdkCurrentSupportedVersions>
+    </PropertyGroup>
+</Project>

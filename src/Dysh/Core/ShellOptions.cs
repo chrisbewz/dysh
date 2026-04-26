@@ -34,14 +34,22 @@ public sealed class ShellOptions
     /// <summary>Sets the working directory for all commands in this shell instance.</summary>
     public ShellOptions WithWorkingDirectory(string path)
     {
+#if NETSTANDARD2_0
+        if (string.IsNullOrWhiteSpace(path)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
+#else
         ArgumentException.ThrowIfNullOrWhiteSpace(path);
+#endif
         return new ShellOptions(path, _environmentVariables, ShellKind, CustomAdapter, Timeout);
     }
 
     /// <summary>Adds or overrides a single environment variable.</summary>
     public ShellOptions WithEnvironmentVariable(string key, string value)
     {
+#if NETSTANDARD2_0
+        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+#else
         ArgumentException.ThrowIfNullOrWhiteSpace(key);
+#endif
         Dictionary<string, string> env = new Dictionary<string, string>(_environmentVariables) { [key] = value };
         return new ShellOptions(WorkingDirectory, env, ShellKind, CustomAdapter, Timeout);
     }
@@ -59,7 +67,11 @@ public sealed class ShellOptions
     /// </summary>
     public ShellOptions WithAdapter(IShellAdapter adapter)
     {
+#if NETSTANDARD2_0
+        if (adapter is null) throw new ArgumentNullException(nameof(adapter));
+#else
         ArgumentNullException.ThrowIfNull(adapter);
+#endif
         return new ShellOptions(WorkingDirectory, _environmentVariables, ShellKind, adapter, Timeout);
     }
 

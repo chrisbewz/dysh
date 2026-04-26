@@ -30,8 +30,13 @@ internal sealed class ProcessRunner
         process.Start();
 
         // Read stdout and stderr concurrently to avoid deadlocks on full buffers
+#if NETSTANDARD2_0
+        Task<string> stdoutTask = process.StandardOutput.ReadToEndAsync();
+        Task<string> stderrTask = process.StandardError.ReadToEndAsync();
+#else
         Task<string> stdoutTask = process.StandardOutput.ReadToEndAsync(ct);
         Task<string> stderrTask = process.StandardError.ReadToEndAsync(ct);
+#endif
 
         using CancellationTokenSource? timeoutCts  = timeout.HasValue
             ? new CancellationTokenSource(timeout.Value)
@@ -45,7 +50,11 @@ internal sealed class ProcessRunner
 
         try
         {
+#if NETSTANDARD2_0
+            await WaitForExitAsync(process, effectiveCt).ConfigureAwait(false);
+#else
             await process.WaitForExitAsync(effectiveCt).ConfigureAwait(false);
+#endif
         }
         catch (OperationCanceledException) when (timeoutCts?.IsCancellationRequested == true)
         {
@@ -90,13 +99,21 @@ internal sealed class ProcessRunner
 
         process.Start();
 
+#if NETSTANDARD2_0
+        while (await process.StandardOutput.ReadLineAsync().ConfigureAwait(false) is { } line)
+#else
         while (await process.StandardOutput.ReadLineAsync(ct).ConfigureAwait(false) is { } line)
+#endif
         {
             ct.ThrowIfCancellationRequested();
             yield return line;
         }
 
+#if NETSTANDARD2_0
+        await WaitForExitAsync(process, ct).ConfigureAwait(false);
+#else
         await process.WaitForExitAsync(ct).ConfigureAwait(false);
+#endif
     }
 
     private static ProcessStartInfo BuildStartInfo(
@@ -115,18 +132,81 @@ internal sealed class ProcessRunner
             WorkingDirectory       = workingDirectory ?? string.Empty,
         };
 
+#if NETSTANDARD2_0
+        startInfo.Arguments = BuildArgumentString(arguments);
+#else
         foreach (string arg in arguments)
             startInfo.ArgumentList.Add(arg);
+#endif
 
-        foreach ((string key, string value) in environmentVariables)
-            startInfo.Environment[key] = value;
+        foreach (KeyValuePair<string, string> kv in environmentVariables)
+            startInfo.Environment[kv.Key] = kv.Value;
 
         return startInfo;
     }
 
     private static void TryKill(Process process)
     {
-        try { process.Kill(entireProcessTree: true); }
+        try
+        {
+#if NETSTANDARD2_0
+            process.Kill();
+#else
+            process.Kill(entireProcessTree: true);
+#endif
+        }
         catch { /* process may have already exited */ }
     }
+
+#if NETSTANDARD2_0
+    /// <summary>
+    /// Polyfill for <c>Process.WaitForExitAsync</c> (unavailable in netstandard2.0).
+    /// Subscribes to the <see cref="Process.Exited"/> event and completes when the
+    /// process exits or the <paramref name="ct"/> is cancelled.
+    /// </summary>
+    private static Task WaitForExitAsync(Process process, CancellationToken ct)
+    {
+        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        process.EnableRaisingEvents = true;
+        process.Exited += (_, _) => tcs.TrySetResult(true);
+
+        // Handle race: process may have already exited before we subscribed
+        if (process.HasExited)
+            tcs.TrySetResult(true);
+
+        var reg = ct.Register(() => tcs.TrySetCanceled(ct));
+
+        return tcs.Task.ContinueWith(
+            t => { reg.Dispose(); return t; },
+            CancellationToken.None,
+            TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default).Unwrap();
+    }
+
+    /// <summary>
+    /// Builds a quoted argument string for <see cref="ProcessStartInfo.Arguments"/>
+    /// on netstandard2.0, which lacks <c>ArgumentList</c>.
+    /// </summary>
+    private static string BuildArgumentString(IEnumerable<string> args)
+    {
+        var parts = new System.Text.StringBuilder();
+        foreach (string arg in args)
+        {
+            if (parts.Length > 0) parts.Append(' ');
+
+            bool needsQuotes = arg.Length == 0 || arg.IndexOf(' ') >= 0 || arg.IndexOf('"') >= 0 || arg.IndexOf('\t') >= 0;
+            if (needsQuotes)
+            {
+                parts.Append('"');
+                parts.Append(arg.Replace("\\", "\\\\").Replace("\"", "\\\""));
+                parts.Append('"');
+            }
+            else
+            {
+                parts.Append(arg);
+            }
+        }
+        return parts.ToString();
+    }
+#endif
 }

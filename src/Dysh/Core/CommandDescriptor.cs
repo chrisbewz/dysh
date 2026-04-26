@@ -50,7 +50,7 @@ public sealed record CommandDescriptor
 
         parts.AddRange(Arguments);
 
-        return string.Join(' ', parts);
+        return string.Join(" ", parts);
     }
 
     /// <inheritdoc/>

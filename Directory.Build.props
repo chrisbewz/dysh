@@ -1,0 +1,8 @@
+<Project>
+    <PropertyGroup>
+        <EngineeringRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)', 'eng'))</EngineeringRoot>
+        <EngineeringTargetsRoot>$([MSBuild]::NormalizeDirectory('$(EngineeringRoot)', 'targets'))</EngineeringTargetsRoot>
+    </PropertyGroup>
+
+    <Import Project="$(EngineeringRoot)runtime.props" />
+</Project>

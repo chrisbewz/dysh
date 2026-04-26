@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Dysh.Core;
 
 namespace Dysh.Adapters;
@@ -15,7 +16,7 @@ internal sealed class NativeShellAdapter : IShellAdapter
     /// <inheritdoc/>
     public NativeShellAdapter(ShellOptions options)
     {
-        _inner = OperatingSystem.IsWindows()
+        _inner = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? new CmdShellAdapter(options)
             : new BashShellAdapter(options);
     }

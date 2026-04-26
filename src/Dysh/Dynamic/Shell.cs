@@ -41,7 +41,11 @@ public static class Shell
     /// <returns>A <c>dynamic</c> <see cref="ShellProxy"/> instance.</returns>
     public static dynamic Create(Action<ShellOptions> configure)
     {
+#if NETSTANDARD2_0
+        if (configure is null) throw new ArgumentNullException(nameof(configure));
+#else
         ArgumentNullException.ThrowIfNull(configure);
+#endif
 
         ShellOptions options = new ShellOptions();
         configure(options);
