@@ -13,8 +13,8 @@ sealed partial class Build : NukeBuild, IHazSolution
     
     public static int Main() => Execute<Build>(x => ((IPack)x).Pack);
 
-    Target Clean => _ => _
-        .Before(Restore)
+    public Target Clean => _ => _
+        .Before(this.As<IRestore>().Restore)
         .Description("Removes build outputs and artifact directories.")
         .Executes(() =>
         {
@@ -23,7 +23,7 @@ sealed partial class Build : NukeBuild, IHazSolution
             ArtifactsDir.CreateOrCleanDirectory();
         });
 
-    Target Restore => _ => _
+    Target IRestore.Restore => _ => _
         .Description("Restores NuGet packages for the entire solution.")
         .Executes(() =>
         {
@@ -31,8 +31,8 @@ sealed partial class Build : NukeBuild, IHazSolution
                 .SetProjectFile(this.As<IHazSolution>().Solution));
         });
 
-    Target Compile => _ => _
-        .DependsOn(Restore)
+    Target ICompile.Compile => _ => _
+        .DependsOn(this.As<IRestore>().Restore)
         .Description("Compiles the solution with the version derived from GitVersion.")
         .Executes(() =>
         {

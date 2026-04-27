@@ -10,7 +10,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dysh.IntegrationTests", "tests\Dysh.IntegrationTests\Dysh.IntegrationTests.csproj", "{C3D4E5F6-A7B8-9012-CDEF-123456789012}"
 EndProject
 
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{E3DF4AA5-4CBC-46CB-9B61-1413306AA3AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "build\Build.csproj", "{E3DF4AA5-4CBC-46CB-9B61-1413306AA3AA}"
 EndProject
 Global
 				GlobalSection(SolutionConfigurationPlatforms) = preSolution
