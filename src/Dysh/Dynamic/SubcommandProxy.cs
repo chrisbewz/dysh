@@ -33,13 +33,17 @@ public sealed class SubcommandProxy : DynamicObject
         object?[]? args,
         out object? result)
     {
-        CommandDescriptor descriptor = ArgumentParser.Map(
-            executable:           _executable,
-            subcommand:           binder.Name,
-            args:                 args ?? [],
-            argumentNames:        binder.CallInfo.ArgumentNames);
+        object?[] callArgs = args ?? [];
+        IList<string> argNames = new List<string>(binder.CallInfo.ArgumentNames);
+        CancellationToken ct = ArgumentParser.ExtractCancellationToken(ref callArgs, ref argNames);
 
-        result = _adapter.ExecuteAsync(descriptor);
+        CommandDescriptor descriptor = ArgumentParser.Map(
+            executable:    _executable,
+            subcommand:    binder.Name,
+            args:          callArgs,
+            argumentNames: argNames);
+
+        result = _adapter.ExecuteAsync(descriptor, ct);
         return true;
     }
 
@@ -52,13 +56,17 @@ public sealed class SubcommandProxy : DynamicObject
         object?[]? args,
         out object? result)
     {
+        object?[] callArgs = args ?? [];
+        IList<string> argNames = new List<string>(binder.CallInfo.ArgumentNames);
+        CancellationToken ct = ArgumentParser.ExtractCancellationToken(ref callArgs, ref argNames);
+
         CommandDescriptor descriptor = ArgumentParser.Map(
             executable:    _executable,
             subcommand:    null,
-            args:          args ?? [],
-            argumentNames: binder.CallInfo.ArgumentNames);
+            args:          callArgs,
+            argumentNames: argNames);
 
-        result = _adapter.ExecuteAsync(descriptor);
+        result = _adapter.ExecuteAsync(descriptor, ct);
         return true;
     }
 }

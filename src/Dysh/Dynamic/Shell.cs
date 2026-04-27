@@ -32,14 +32,18 @@ public static class Shell
     /// and default options.
     /// </summary>
     /// <returns>A <c>dynamic</c> <see cref="ShellProxy"/> instance.</returns>
-    public static dynamic Create() => Create(_ => { });
+    public static dynamic Create() => Create(opt => opt);
 
     /// <summary>
     /// Creates a shell instance with custom <see cref="ShellOptions"/>.
     /// </summary>
-    /// <param name="configure">A delegate to configure the shell options.</param>
+    /// <param name="configure">
+    /// A delegate that receives the default options and returns the configured options.
+    /// Because <see cref="ShellOptions"/> is immutable, return the result of each <c>With*</c> call:
+    /// <c>Shell.Create(opt => opt.WithAdapter(myAdapter))</c>.
+    /// </param>
     /// <returns>A <c>dynamic</c> <see cref="ShellProxy"/> instance.</returns>
-    public static dynamic Create(Action<ShellOptions> configure)
+    public static dynamic Create(Func<ShellOptions, ShellOptions> configure)
     {
 #if NETSTANDARD2_0
         if (configure is null) throw new ArgumentNullException(nameof(configure));
@@ -47,8 +51,7 @@ public static class Shell
         ArgumentNullException.ThrowIfNull(configure);
 #endif
 
-        ShellOptions options = new ShellOptions();
-        configure(options);
+        ShellOptions options = configure(new ShellOptions());
 
         IShellAdapter adapter = ResolveAdapter(options);
         return new ShellProxy(adapter);
