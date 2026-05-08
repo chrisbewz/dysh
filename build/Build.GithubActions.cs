@@ -18,7 +18,7 @@ using Nuke.Common.CI.GitHubActions;
     FetchDepth = 0,
     OnPushTags = ["v*"],
     InvokedTargets =  [nameof(IPublish.Publish)],
-    ImportSecrets =  [nameof(IPublish.NuGetApiKey)])]
+    ImportSecrets =  [nameof(PublicNuGetApiKey)])]
 [GitHubActions(
     Workflows.AlphaDeployment,
     GitHubActionsImage.UbuntuLatest,
