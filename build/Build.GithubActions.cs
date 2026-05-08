@@ -9,8 +9,7 @@ using Nuke.Common.CI.GitHubActions;
     AutoGenerate = true,
     OnPushBranches = [MasterBranch, DevelopBranch, $"{ReleaseBranchPrefix}/**"],
     OnPullRequestBranches = [MasterBranch, DevelopBranch],
-    InvokedTargets = [nameof(ITest.Test), nameof(IPack.Pack)],
-    ImportSecrets = [nameof(IPublish.NuGetApiKey)])]
+    InvokedTargets = [nameof(ITest.Test), nameof(IPack.Pack)])]
 [GitHubActions(
     name: Workflows.PublishWorkflow,
     image: GitHubActionsImage.UbuntuLatest,
@@ -18,7 +17,7 @@ using Nuke.Common.CI.GitHubActions;
     FetchDepth = 0,
     OnPushTags = ["v*"],
     InvokedTargets =  [nameof(IPublish.Publish)],
-    ImportSecrets =  [nameof(IPublish.NuGetApiKey)])]
+    ImportSecrets =  [nameof(PublicNuGetApiKey)])]
 [GitHubActions(
     Workflows.AlphaDeployment,
     GitHubActionsImage.UbuntuLatest,
