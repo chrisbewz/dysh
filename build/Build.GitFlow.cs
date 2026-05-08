@@ -80,14 +80,14 @@ sealed partial class Build
     {
         Git($"checkout {MasterBranch}");
         Git($"merge --no-ff --no-edit {GitRepository.Branch}");
-        Git($"tag {MajorMinorPatchVersion}");
+        Git($"tag {MilestoneTitle}");
 
         Git($"checkout {DevelopBranch}");
         Git($"merge --no-ff --no-edit {GitRepository.Branch}");
 
         Git($"branch -D {GitRepository.Branch}");
 
-        Git($"push origin {MasterBranch} {DevelopBranch} {MajorMinorPatchVersion}");
+        Git($"push origin {MasterBranch} {DevelopBranch} {MilestoneTitle}");
     }
 
     void Checkout(string branch, string start)
