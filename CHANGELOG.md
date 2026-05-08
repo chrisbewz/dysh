@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.1.0] / 2026-05-08
 ### Added
 - DLR-powered shell execution — any shell command becomes a C# method call via `dynamic Shell.Create()`
 - Async-first API — executions return `Task<CommandResult>` or `IAsyncEnumerable<string>` for streaming output
@@ -19,3 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `EnsureSuccess()` extension to throw on non-zero exit codes
 - Full `CancellationToken` support throughout async execution
 - Target frameworks: `net8.0`, `net9.0`, and `netstandard2.0`
+
+[Unreleased]: https://github.com/chrisbewz/dysh/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/chrisbewz/dysh/tree/0.1.0
