@@ -46,13 +46,17 @@ public sealed class ShellProxy : DynamicObject
         object?[]? args,
         out object? result)
     {
+        object?[] callArgs = args ?? [];
+        IList<string> argNames = new List<string>(binder.CallInfo.ArgumentNames);
+        CancellationToken ct = ArgumentParser.ExtractCancellationToken(ref callArgs, ref argNames);
+
         CommandDescriptor descriptor = ArgumentParser.Map(
             executable:    binder.Name,
             subcommand:    null,
-            args:          args ?? [],
-            argumentNames: binder.CallInfo.ArgumentNames);
+            args:          callArgs,
+            argumentNames: argNames);
 
-        result = _adapter.ExecuteAsync(descriptor);
+        result = _adapter.ExecuteAsync(descriptor, ct);
         return true;
     }
 

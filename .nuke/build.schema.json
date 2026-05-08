@@ -24,12 +24,16 @@
     "ExecutableTarget": {
       "type": "string",
       "enum": [
+        "Changelog",
         "Clean",
         "Compile",
         "CreateGitHubRelease",
         "DeletePackages",
+        "Hotfix",
+        "Milestone",
         "Pack",
         "Publish",
+        "Release",
         "ReportCoverage",
         "Restore",
         "Test"

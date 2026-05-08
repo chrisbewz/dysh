@@ -79,4 +79,35 @@ public static class ArgumentParser
             EnvironmentVariables = environmentVariables ?? new Dictionary<string, string>(),
         };
     }
+
+    /// <summary>
+    /// Scans named arguments for a <see cref="CancellationToken"/> value, removes it from
+    /// both arrays, and returns it. Returns <see cref="CancellationToken.None"/> when absent.
+    /// </summary>
+    internal static CancellationToken ExtractCancellationToken(
+        ref object?[] args,
+        ref IList<string> argumentNames)
+    {
+        int positionalCount = args.Length - argumentNames.Count;
+
+        for (int i = 0; i < argumentNames.Count; i++)
+        {
+            if (args[positionalCount + i] is not CancellationToken ct)
+                continue;
+
+            object?[] filteredArgs = new object?[args.Length - 1];
+            Array.Copy(args, 0, filteredArgs, 0, positionalCount + i);
+            Array.Copy(args, positionalCount + i + 1, filteredArgs, positionalCount + i, argumentNames.Count - i - 1);
+
+            List<string> filteredNames = new List<string>(argumentNames.Count - 1);
+            for (int j = 0; j < argumentNames.Count; j++)
+                if (j != i) filteredNames.Add(argumentNames[j]);
+
+            args          = filteredArgs;
+            argumentNames = filteredNames;
+            return ct;
+        }
+
+        return CancellationToken.None;
+    }
 }

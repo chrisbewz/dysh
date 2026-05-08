@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Helpers;
 using NuGet.Packaging;
 using Nuke.Common.CI.GitHubActions;
@@ -20,7 +18,9 @@ sealed partial class Build: IPack
         .SetNoBuild(true)
         .SetNoRestore(true)
         .When(s => Host is Terminal or GitHubActions { Workflow: Workflows.AlphaDeployment }, s => s
-            .SetVersion(DefaultDeploymentVersion));
+            .SetVersion(DefaultDeploymentVersion))
+        .When(s => !IsPublicRelease, s => s
+            .SetPackageReleaseNotes(string.Empty));
     
     Target DeletePackages => _ => _
         .DependentFor<IPublish>()

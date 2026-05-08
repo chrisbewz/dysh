@@ -82,7 +82,7 @@ public sealed class ShellExecutionTests
 
         Func<Task> act = async () =>
         {
-            CommandResult _ = await shell.echo("should not run");
+            CommandResult _ = await shell.echo("should not run", ct: cts.Token);
         };
 
         // Awaiting a cancelled token before the process starts should throw
