@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
-
 ### Added
 - DLR-powered shell execution — any shell command becomes a C# method call via `dynamic Shell.Create()`
 - Async-first API — executions return `Task<CommandResult>` or `IAsyncEnumerable<string>` for streaming output
