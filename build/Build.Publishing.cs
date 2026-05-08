@@ -15,7 +15,9 @@ sealed partial class Build: IPublish
     [Parameter] [Secret] readonly string PublicNuGetApiKey;
     [Parameter] [Secret] readonly string FeedzNuGetApiKey;
 
-    bool IsPublicRelease => GitRepository.IsOnMasterBranch() || GitRepository.IsOnReleaseBranch();
+    bool IsPublicRelease => GitRepository.IsOnMasterBranch() 
+        || GitRepository.IsOnReleaseBranch()
+        || (Host is GitHubActions && GitHubActions.Workflow == Workflows.PublishWorkflow);
     
     string IPublish.NuGetSource => IsPublicRelease ? PublicNuGetSource : FeedzNuGetSource;
     

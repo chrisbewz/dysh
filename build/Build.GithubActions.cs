@@ -4,11 +4,11 @@ using Nuke.Common.CI.GitHubActions;
 [GitHubActions(
     name: Workflows.CiWorkflow,
     image: GitHubActionsImage.UbuntuLatest,
-    images: [GitHubActionsImage.WindowsLatest],
+    images: [GitHubActionsImage.WindowsLatest, GitHubActionsImage.MacOsLatest],
     FetchDepth = 0,
     AutoGenerate = true,
-    OnPushBranches = [MasterBranch],
-    OnPullRequestBranches = [MasterBranch],
+    OnPushBranches = [MasterBranch, DevelopBranch, $"{ReleaseBranchPrefix}/**"],
+    OnPullRequestBranches = [MasterBranch, DevelopBranch],
     InvokedTargets = [nameof(ITest.Test), nameof(IPack.Pack)],
     ImportSecrets = [nameof(IPublish.NuGetApiKey)])]
 [GitHubActions(
