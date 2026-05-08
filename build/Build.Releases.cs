@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Nuke.Common.Tools.GitHub;
 using Octokit;
 

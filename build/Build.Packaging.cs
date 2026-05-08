@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Helpers;
 using NuGet.Packaging;
 using Nuke.Common.CI.GitHubActions;

@@ -1,5 +1,3 @@
-using static Nuke.Common.Tools.Git.GitTasks;
-
 sealed partial class Build: IHazGitRepository, ICreateGitHubRelease
 {
     const string MasterBranch = "main";

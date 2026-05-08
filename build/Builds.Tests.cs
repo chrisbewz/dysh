@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Helpers;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
