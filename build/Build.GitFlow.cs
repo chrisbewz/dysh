@@ -92,14 +92,18 @@ sealed partial class Build
 
     void Checkout(string branch, string start)
     {
-        bool hasCleanWorkingCopy = GitHasCleanWorkingCopy();
+        bool hasTrackedChanges = Git("status --short").Any(x => !x.Text.StartsWith("??"));
+        bool stashed = false;
 
-        if (!hasCleanWorkingCopy && AutoStash)
-            Git("stash");
+        if (hasTrackedChanges && AutoStash)
+        {
+            Git("stash push");
+            stashed = true;
+        }
 
         Git($"checkout -b {branch} {start}");
 
-        if (!hasCleanWorkingCopy && AutoStash)
-            Git("stash apply");
+        if (stashed)
+            Git("stash pop");
     }
 }
